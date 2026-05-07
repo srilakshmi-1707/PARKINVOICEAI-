@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Record Voice</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(to right, #e8f5f5, #f0fbfb);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card */
+.card {
+    background: white;
+    padding: 50px;
+    border-radius: 18px;
+    text-align: center;
+    width: 420px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+}
+
+h2 {
+    color: #1f6f78;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 16px;
+    color: #444;
+}
+
+/* Buttons */
+.modal-box button {
+    padding: 14px 18px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background: #1f6f78;
+    color: white;
+    cursor: pointer;
+    min-width: 120px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.modal-box button:hover {
+    background: #155e63;
+}
+
+.modal-box button:disabled {
+    background: #9fbfc2;
+    cursor: not-allowed;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+button {
+    display: inline-block;
+    padding: 14px 28px;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    background: #1f6f78;
+    color: white;
+    cursor: pointer;
+    margin-top: 25px;
+    min-width: 180px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+button:hover {
+    background: #155e63;
+}
+
+button:disabled {
+    background: #b0bcbc;
+    cursor: not-allowed;
+}
+
+.modal-box {
+    background: white;
+    padding: 35px;
+    border-radius: 16px;
+    width: 420px;
+    text-align: center;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.25);
+    max-height: 90vh;
+overflow-y: auto;
+width: 450px;
+box-sizing: border-box;
+}
+
+/* Visualizer */
+canvas {
+    margin: 20px auto;
+    display: block;
+    background: #eef7f7;
+    border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Main Card -->
+<div class="card">
+    <h2>{{ text.voice_recording }}</h2>
+    <p>{{ text.record_description }}</p>
+   <button onclick="openMicModal()">🎙 {{ text.record_voice }}</button>
+</div>
+
+<!-- Mic Modal -->
+<!-- Mic Modal -->
+<!-- Mic Modal -->
+<div id="micModal" class="modal">
+    <div class="modal-box">
+        <h2>{{ text.recording }}</h2>
+        <p id="status">{{ text.click_start }}</p>
+        <canvas id="visualizer" width="320" height="80"></canvas>
+
+        <div class="button-group">
+            <button id="startBtn" onclick="startRecording()">{{ text.start }}</button>
+            <button id="stopBtn" onclick="stopRecording()" disabled>{{ text.stop }}</button>
+            <button id="predictBtn" onclick="uploadRecording()" disabled>
+                {{ text.predict_risk }}
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+let audioCtx, analyser, microphone, dataArray, animationId;
+let mediaStream;
+let recordedChunks = [];
+let mediaRecorder;
+
+/* Open modal */
+function openMicModal() {
+    document.getElementById("micModal").style.display = "flex";
+}
+
+/* Start recording */
+function startRecording() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+        mediaStream = stream;
+
+        // Media Recorder
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable = e => {
+    if (e.data.size > 0) {
+        recordedChunks.push(e.data);
+    }
+};
+
+mediaRecorder.onstop = () => {
+    document.getElementById("predictBtn").disabled = false;
+};
+
+        mediaRecorder.start();
+
+        // Visualizer
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+
+        microphone = audioCtx.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        document.getElementById("status").innerText = "{{ text.recording_progress }}";
+        document.getElementById("startBtn").disabled = true;
+        document.getElementById("stopBtn").disabled = false;
+
+        drawVisualizer();
+    })
+    .catch(() => {
+        alert("{{ text.mic_permission_denied }}");
+    });
+}
+
+/* Visualizer */
+function drawVisualizer() {
+    const canvas = document.getElementById("visualizer");
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+        animationId = requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let barWidth = (canvas.width / dataArray.length) * 2.5;
+        let x = 0;
+
+        dataArray.forEach(value => {
+            let barHeight = value / 2;
+            ctx.fillStyle = "#1f6f78";
+            ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+            x += barWidth + 1;
+        });
+    }
+    draw();
+}
+
+/* Stop recording */
+function stopRecording() {
+    cancelAnimationFrame(animationId);
+
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+    }
+
+    if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+    }
+
+    if (audioCtx) {
+        audioCtx.close();
+    }
+
+    document.getElementById("status").innerText = "{{ text.recording_completed }}";
+    document.getElementById("stopBtn").disabled = true;
+}
+/* Upload recording to Flask */
+function uploadRecording() {
+
+    const blob = new Blob(recordedChunks, { type: "audio/wav" });
+
+    const formData = new FormData();
+    formData.append("audio", blob, "recording.wav");
+
+    fetch("/record", {
+        method: "POST",
+        body: formData
+    })
+.then(response => {
+    if (response.ok) {
+        window.location.href = "/prediction";   // ✅ redirect here
+    } else {
+        return response.text().then(text => {
+            alert(text);
+        });
+    }
+})
+.catch(err => {
+    console.error(err);
+    alert("Upload failed");
+});}
+</script>
+
+</body>
+</html>

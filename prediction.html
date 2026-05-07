@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ text.risk_prediction }}</title>
+
+<style>
+body {
+    font-family: "Segoe UI", Arial;
+    background: #f4fbfb;
+    margin: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: 60px auto;
+    background: white;
+    padding: 50px;
+    border-radius: 18px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+h1 {
+    font-size: 38px;
+    color: #1f6f78;
+}
+
+.risk-box {
+    margin: 40px 0;
+    padding: 30px;
+    border-radius: 15px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.low { background: #d4f8e8; color: #0a5c3f; }
+.medium { background: #fff4cc; color: #8a6d00; }
+.high { background: #ffd6d6; color: #9c0000; }
+
+.alert-text {
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+.history {
+    margin-top: 50px;
+}
+
+table {
+    width: 100%;
+    font-size: 22px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.compare-up { color: red; }
+.compare-down { color: green; }
+
+.action-btn {
+    margin-top: 40px;
+    padding: 18px 30px;
+    font-size: 22px;
+    background: #1f6f78;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    background: #155e63;
+}   
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>{{ text.voice_risk_analysis }}</h1>
+<div class="risk-box {{ risk_class }}">
+    {{ text.risk_level }}: {{ risk_score }} %
+</div>
+
+<div class="alert-text">
+    {{ alert_message }}
+</div>
+
+<div class="history">
+    <h2>{{ text.previous_records }}</h2>
+    <table>
+        <tr>
+            <th>{{ text.date }}</th>
+<th>{{ text.risk_percent }}</th>
+</tr>
+
+        {% for row in history %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}%</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+</div>
+
+<button class="action-btn" onclick="window.location.href='/dashboard'">
+   {{ text.back_dashboard }}
+</button>
+
+</div>
+
+</body>
+</html>

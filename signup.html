@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ text.signup }} – {{ text.app_name }}</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(to right, #e8f5f5, #f0fbfb);
+}
+.container {
+    max-width: 500px;
+    margin: 80px auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+h1 {
+    text-align: center;
+    color: #1f6f78;
+    margin-bottom: 20px;
+}
+label {
+    font-size: 16px;
+    color: #333;
+    display: block;
+    margin-top: 15px;
+}
+input, select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+button {
+    width: 100%;
+    margin-top: 30px;
+    padding: 14px;
+    font-size: 18px;
+    background-color: #1f6f78;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #155e63;
+}
+.footer-text {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+a {
+    color: #1f6f78;
+    text-decoration: none;
+    font-weight: bold;
+}
+.alert-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.alert-modal {
+    background: #fff;
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    text-align: center;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.alert-modal p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.alert-modal button {
+    padding: 10px 30px;
+    background-color: #1f6f78;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.alert-modal button:hover {
+    background-color: #155e63;
+}
+</style>
+</head>
+
+<script>
+function showAlert(message) {
+    document.getElementById("alertMessage").innerText = message;
+    document.getElementById("alertBox").style.display = "flex";
+}
+
+function closeAlert() {
+    document.getElementById("alertBox").style.display = "none";
+}
+</script>
+
+{% if error %}
+<script>
+window.onload = function() {
+    showAlert("{{ error }}");
+};
+</script>
+{% endif %}
+
+<body>
+<div class="container">
+
+    <h1>{{ text.signup }}</h1>
+
+    <!-- Custom Alert Modal -->
+    <div id="alertBox" class="alert-overlay">
+        <div class="alert-modal">
+            <p id="alertMessage"></p>
+            <button onclick="closeAlert()">OK</button>
+        </div>
+    </div>
+
+    <form method="POST">
+
+        <label>{{ text.name }}</label>
+        <input type="text" name="name" placeholder="{{ text.name }}" required>
+
+        <label>{{ text.age }}</label>
+        <input type="number" name="age" min = "1" max = "120" placeholder="{{ text.age }}" required>
+
+        <label>{{ text.gender }}</label>
+        <select name="gender" required>
+            <option value="">{{ text.select_gender }}</option>
+            <option value="Male">{{ text.male }}</option>
+            <option value="Female">{{ text.female }}</option>
+            <option value="Other">{{ text.other }}</option>
+        </select>
+
+        <label>{{ text.phone }}</label>
+        <input type="tel" name="phone" placeholder="{{ text.phone }}" required>
+
+        <button type="submit">{{ text.signup }}</button>
+
+    </form>
+
+    <div class="footer-text">
+        {{ text.already_have_account }}
+        <a href="/login">{{ text.login }}</a>
+    </div>
+
+</div>
+</body>
+</html>

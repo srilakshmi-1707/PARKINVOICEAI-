@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ text.login }} – {{ text.app_name }}</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(to right, #e8f5f5, #f0fbfb);
+}
+.container {
+    max-width: 500px;
+    margin: 80px auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+h1 {
+    text-align: center;
+    color: #1f6f78;
+    margin-bottom: 20px;
+}
+label {
+    font-size: 16px;
+    color: #333;
+    display: block;
+    margin-top: 15px;
+}
+input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+.error-box {
+    margin-bottom: 20px;
+    padding: 14px;
+    background-color: #ffe5e5;
+    border-left: 6px solid #d32f2f;
+    color: #a10000;
+    font-size: 16px;
+    border-radius: 6px;
+    text-align: left;
+}
+button {
+    width: 100%;
+    margin-top: 30px;
+    padding: 14px;
+    font-size: 18px;
+    background-color: #1f6f78;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #155e63;
+}
+.footer-text {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+a {
+    color: #1f6f78;
+    text-decoration: none;
+    font-weight: bold;
+}
+</style>
+</head>
+{% if error %}
+<div class="error-box">
+    {{ error }}
+</div>
+{% endif %}
+
+<body>
+<div class="container">
+
+    <h1>{{ text.login }}</h1>
+
+
+
+    <form method="POST">
+
+        <label>{{ text.name }}</label>
+        <input type="text" name="name" placeholder="{{ text.name }}" required>
+
+        <label>{{ text.phone }}</label>
+        <input type="tel" name="phone" placeholder="{{ text.phone }}" required>
+
+        <button type="submit">{{ text.login }}</button>
+
+    </form>
+
+    <div class="footer-text">
+        {{ text.no_account }}
+        <a href="/signup">{{ text.signup }}</a>
+    </div>
+
+</div>
+</body>
+</html>

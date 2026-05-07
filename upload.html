@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Upload Audio</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(to right, #e8f5f5, #f0fbfb);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card */
+.card {
+    background: white;
+    padding: 45px;
+    border-radius: 18px;
+    text-align: center;
+    width: 420px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.icon {
+    font-size: 70px;
+    color: #1f6f78;
+    margin-bottom: 15px;
+}
+
+h2 {
+    color: #1f6f78;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 18px;
+    color: #444;
+    margin-bottom: 30px;
+}
+
+/* File input */
+input[type="file"] {
+    display: none;
+}
+
+.upload-label {
+    display: inline-block;
+    padding: 16px 24px;
+    background: #1f6f78;
+    color: white;
+    font-size: 18px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.upload-label:hover {
+    background:#155e63;
+}
+
+.upload-label.disabled {
+    background: #b0bcbc;
+    cursor: not-allowed;
+}
+
+.file-name {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Button */
+.predict-btn {
+    width: 100%;
+    padding: 14px;
+    background-color:#1f6f78;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.predict-btn:hover {
+    background-color:#155e63;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <div class="icon">⬆️</div>
+    <h2>{{ text.upload_audio }}</h2>
+    <p>{{ text.upload_description }}</p>
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+
+        <label for="audioFile" class="upload-label">
+           {{ text.choose_file }}
+        </label>
+
+        <input type="file"
+               id="audioFile"
+               name="audio"
+               accept=".wav,audio/wav"
+               onchange="fileSelected()">
+
+        <div class="file-name" id="fileName"></div>
+
+        <button type="submit" id="predictBtn" class="predict-btn" style="display:none;">
+            {{ text.predict_risk }}
+        </button>
+
+    </form>
+</div>
+
+<script>
+function fileSelected() {
+    const fileInput = document.getElementById("audioFile");
+    const fileName = document.getElementById("fileName");
+    const predictBtn = document.getElementById("predictBtn");
+    const uploadLabel = document.querySelector(".upload-label");
+
+    if (fileInput.files.length === 1) {
+       fileName.innerText = "Selected File: " + fileInput.files[0].name;
+        uploadLabel.classList.add("disabled");
+        uploadLabel.innerText = "File Selected";
+        predictBtn.style.display = "block";
+    }
+}
+document.getElementById("audioFile").addEventListener("change", fileSelected);
+</script>
+
+</body>
+</html>
